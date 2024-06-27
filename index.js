@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const dns = require('dns');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URI, {userNewUrlParser: true, useUnifiedTopology: true});
@@ -37,8 +38,16 @@ app.get('/api/hello', function(req, res) {
 });
 
 app.post("/api/shorturl", function(req, res){
-  res.json({"post": req.body.url})
-})
+  var longurl = req.body.url.replace(/(^https?:\/\/)/, "");
+  dns.lookup(longurl, function(err, address, family){
+    if (err){
+      res.json({error: "invalid url"})
+    }
+    else {
+      
+    }
+  });
+});
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
