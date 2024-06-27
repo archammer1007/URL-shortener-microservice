@@ -17,9 +17,12 @@ app.use('/public', express.static(`${process.cwd()}/public`));
 
 const Schema = mongoose.Schema;
 
+//website schema has a longurl and a shorturl value
 const websiteSchema = new Schema({
-  url: String
+  longurl: String,
+  shorturl: String
 });
+
 
 let Website = mongoose.model("Website", websiteSchema);
 
