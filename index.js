@@ -21,7 +21,7 @@ const Schema = mongoose.Schema;
 //website schema has a longurl and a shorturl value
 const websiteSchema = new Schema({
   longurl: String,
-  shorturl: String
+  shorturl: Number
 });
 
 
@@ -46,7 +46,26 @@ app.post("/api/shorturl", function(req, res){
       res.json({error: "invalid url"})
     }
     else {
-      
+      //first check if the website is already in the database
+      Website.findOne({longurl: longurl}, function(err, data){
+        if (err){return console.error(err)}
+        //if data is not null, the website is in the database, so we just return the data to the user
+        if (data){
+          res.json({longurl:longurl, shorturl:data.shorturl});
+        }
+        //if the website is not in the database, we first count how many documents are already in the database
+        //we use this value as the shorturl, and add the website to the database
+        //then we return the data to the user
+        else {
+          Website.countDocuments({}, function(err, count){
+            var website = new Website({longurl: longurl, shorturl: count});
+            website.save(function(err, data){
+              if (err) return console.error(err);
+              res.json({longurl:longurl, shorturl:count});
+            })
+          });
+        }
+      })
     }
   });
 });
