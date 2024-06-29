@@ -42,7 +42,7 @@ app.post("/api/shorturl", function(req, res){
   //strip the http(s) from the website entered, because dns.lookup doesn't like it
   var longurl = req.body.url;
   //to use dns.lookup, we need to strip the http(s) from the website if it exists
-  var dnsaddress = req.body.url.replace(/(^https?:\/\/)/, "").replace(/\/(.+)?/, '');
+  var dnsaddress = req.body.url.replace(/(^https?:\/\/)/, "");
   dns.lookup(dnsaddress, function(err, address, family){
     //if err is not null, then the website not not valid, so display an error message for the user
     if (err){
