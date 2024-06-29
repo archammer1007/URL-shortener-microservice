@@ -5,6 +5,7 @@ const app = express();
 const dns = require('dns');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const res = require('express/lib/response');
 mongoose.connect(process.env.MONGO_URI, {userNewUrlParser: true, useUnifiedTopology: true});
 
 // Basic Configuration
@@ -71,6 +72,16 @@ app.post("/api/shorturl", function(req, res){
     }
   });
 });
+
+app.get("/api/shorturl/:shorturl", function(req, res){
+  //get the shorturl from the params
+  var shorturl = req.params.shorturl;
+  //if the shorturl corresponds to an entry in the database, we redirect the user to the corresponding longurl
+  Website.findOne({shorturl: shorturl}, function(err, data){
+    if (err) return console.log(err);
+    res.redirect(data.longurl);
+  })
+})
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
