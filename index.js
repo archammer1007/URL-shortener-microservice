@@ -42,7 +42,7 @@ app.post("/api/shorturl", function(req, res){
   //strip the http(s) from the website entered, because dns.lookup doesn't like it
   var longurl = req.body.url;
   //to use dns.lookup, we need to strip the http(s) from the website if it exists
-  var dnsaddress = req.body.url.replace(/(^https?:\/\/)/, "");
+  var dnsaddress = req.body.url.replace(/(^https?:\/\/)/, "").replace(/\/(.+)?/, '');
   dns.lookup(dnsaddress, function(err, address, family){
     //if err is not null, then the website not not valid, so display an error message for the user
     if (err){
@@ -54,7 +54,7 @@ app.post("/api/shorturl", function(req, res){
         if (err){return console.error(err)}
         //if data is not null, the website is in the database, so we just return the data to the user
         if (data){
-          res.json({longurl:longurl, shorturl:data.shorturl});
+          res.json({original_url:longurl, short_url:data.shorturl});
         }
         //if the website is not in the database, we first count how many documents are already in the database
         //we use this value as the shorturl, and add the website to the database
@@ -64,7 +64,7 @@ app.post("/api/shorturl", function(req, res){
             var website = new Website({longurl: longurl, shorturl: count});
             website.save(function(err, data){
               if (err) return console.error(err);
-              res.json({longurl:longurl, shorturl:count});
+              res.json({original_url:longurl, short_url:count});
             })
           });
         }
